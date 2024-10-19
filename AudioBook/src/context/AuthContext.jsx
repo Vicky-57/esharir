@@ -1,25 +1,37 @@
-import React, { createContext, useContext, useState } from 'react';
+// src/context/AuthContext.js
+
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import Cookies from 'js-cookie';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+    const [user, setUser] = useState(null);
 
-  const login = (userData) => {
-    setUser(userData);
-  };
+    useEffect(() => {
+        const userData = Cookies.get('user');
+        if (userData) {
+            setUser(JSON.parse(userData));
+        }
+    }, []);
 
-  const logout = () => {
-    setUser(null);
-  };
+    const login = (userData) => {
+        setUser(userData);
+    };
 
-  return (
-    <AuthContext.Provider value={{ user, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+    const logout = () => {
+        setUser(null);
+        Cookies.remove('token');
+        Cookies.remove('user');
+    };
+
+    return (
+        <AuthContext.Provider value={{ user, login, logout }}>
+            {children}
+        </AuthContext.Provider>
+    );
 };
 
 export const useAuth = () => {
-  return useContext(AuthContext);
+    return useContext(AuthContext);
 };

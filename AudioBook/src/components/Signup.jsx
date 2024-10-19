@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useState } from 'react';
+import axios from 'axios';
 
 const schema = z.object({
     username: z.string().min(2, { message: 'Username is required' }),
@@ -23,29 +24,17 @@ function Signup() {
 
     const onSubmit = async (data) => {
         try {
-            const response = await fetch('http://127.0.0.1:8000/signup/', { 
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username: data.username, 
-                    password: data.password,
-                    email: data.email,
-                }),
+            const response = await axios.post('http://127.0.0.1:8000/signup/', {
+                username: data.username,
+                password: data.password,
+                email: data.email,
             });
 
-            if (!response.ok) {
-                const result = await response.json();
-                throw new Error(result.message || 'Signup failed');
-            }
-
-            const result = await response.json();
-            console.log(result);
-            navigate('/home');
+            console.log('Signup successful:', response.data);
+            navigate('/home');  // Redirect on successful signup
         } catch (error) {
-            console.error('Error:', error);
-            setErrorMessage(error.message); // Set the error message to display to the user
+            console.error('Signup error:', error.response?.data || error.message);
+            setErrorMessage(error.response?.data?.detail || 'Signup failed. Please check your inputs.');
         }
     };
 
@@ -56,7 +45,7 @@ function Signup() {
             </div>
             <div className="flex-1 flex flex-col items-center justify-center bg-white p-6 md:p-10">
                 <h1 className="text-2xl md:text-3xl font-bold mb-6">Create your <span className='text-teal-700'>eSharirbook</span> Account</h1>
-                {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>} {/* Display the error message */}
+                {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
                 <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-xs md:max-w-sm">
                     <div className="mb-4">
                         <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>
@@ -65,7 +54,7 @@ function Signup() {
                     </div>
                     <div className="mb-4">
                         <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
-                        <input id="email" type="text" {...register('email')} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm" />
+                        <input id="email" type="email" {...register('email')} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm" />
                         {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
                     </div>
                     <div className="mb-4">

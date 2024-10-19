@@ -57,9 +57,9 @@ const Modal = ({ shloka, bookId, chapterId, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-11/12 md:w-1/2 lg:w-1/3">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-11/12 md:w-1/2 lg:w-2/3 overflow-auto">
         <h2 className="text-xl font-bold mb-4">Shloka {shloka.shloka_number}</h2>
-        <p className="mb-4">{shloka.shlok_text}</p>
+        <p className="mb-4 ">{shloka.shlok_text}</p>
 
         {audioUrl && (
           <div className="mt-4">
